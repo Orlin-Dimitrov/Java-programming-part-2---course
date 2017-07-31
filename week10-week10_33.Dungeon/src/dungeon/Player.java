@@ -7,7 +7,7 @@ package dungeon;
 
 /**
  *
- * @author Dmitry
+ * @author Orlin
  */
 public class Player extends BaseObject {
 
@@ -15,28 +15,32 @@ public class Player extends BaseObject {
         super(x, y);
     }
 
-    public void move(char direction) {
-        if (direction == 'w') {
-            if(y - 1 >= 0)
+    public void move(char button, int lenght, int height) {
+        if (button == 'w') {
+            if (y - 1 >= 0) {
                 y += -1;
+            }
         }
-        else if (direction == 's') {
-            if(y + 1 < Dungeon.game.getHeight())
+        if (button == 's') {
+            if (y + 1 < height) {
                 y += 1;
+            }
         }
-        else if (direction == 'a') {
-            if(x - 1 >= 0)
+        if (button == 'a') {
+            if (x - 1 >= 0) {
                 x += -1;
+            }
         }
-        else if (direction == 'd') {
-            if(x + 1 < Dungeon.game.getLength())
+        if (button == 'd') {
+           if (x + 1 < lenght){
                 x += 1;
+            }
         }
     }
 
     @Override
-    public void draw(Canvas canvas) {
-        canvas.setPoint(x, y, '@');
+    public void draw(PlayField playfield) {
+        playfield.SetPoint(x, y, '@');
     }
-    
+
 }

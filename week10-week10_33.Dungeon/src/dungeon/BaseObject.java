@@ -7,55 +7,55 @@ package dungeon;
 
 /**
  *
- * @author Dmitry
+ * @author Orlin
  */
 public abstract class BaseObject {
     protected int x;
     protected int y;
     private boolean alive;
     
-    public BaseObject(int x, int y) {
+    public BaseObject(int x, int y){
         this.x = x;
         this.y = y;
         this.alive = true;
     }
-
-    public boolean isAlive() {
-        return alive;
+    
+    public boolean isAlive(){
+        return this.alive;
     }
-
-    public void setAlive(boolean alive) {
+    
+    public void setAlive (boolean alive){
         this.alive = alive;
     }
     
-    public int getX() {
-        return x;
+    public int getX(){
+        return this.x;
     }
-
-    public int getY() {
-        return y;
+    
+    public int getY(){
+        return this.y;
     }
-
-    public void setX(int x) {
+    
+    public void setX(int x){
         this.x = x;
     }
-
-    public void setY(int y) {
+    
+    public void setY(int y){
         this.y = y;
     }
-
-    public void die() {
+    
+    public void die(){
         this.alive = false;
     }
     
-    public boolean isIntersec(BaseObject o)
-    {
-        if(this.getX() == o.getX() && this.getY() == o.getY()) {
+    public boolean isIntersec(BaseObject object){
+        if (this.x == object.x && this.y == object.y){    //AKO IMA PROBLEM zamesti this.x s this.getX() i ostanalite
             return true;
+        }else {
+            return false;
         }
-        return false;
     }
-       
-    public abstract void draw(Canvas canvas);
+    
+    public abstract void draw (PlayField playfield);
     
 }

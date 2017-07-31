@@ -8,12 +8,14 @@ package dungeon;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  *
- * @author Dmitry
+ * @author Orlin
  */
 public class Dungeon {
+
     private int length;
     private int height;
     private int vampires;
@@ -21,132 +23,106 @@ public class Dungeon {
     private boolean vampiresMove;
     private Player player = new Player(0, 0);
     private List<Vampire> vampList = new ArrayList<Vampire>();
-    
+    private Scanner reader;
+
     public Dungeon(int length, int height, int vampires, int moves, boolean vampiresMove) {
         this.length = length;
         this.height = height;
         this.vampires = vampires;
         this.moves = moves;
         this.vampiresMove = vampiresMove;
-    }
-    
-     public int getLength() {
-        return length;
+        this.reader = new Scanner(System.in);
     }
 
-    public int getHeight() {
-        return height;
-    }
-
-    public int getMoves() {
-        return moves;
-    }
-    
     public void printPositions() {
         System.out.println(moves + "\n");
         System.out.println("@ " + player.getX() + " " + player.getY());
-        for(Vampire v : vampList) {
+        for (Vampire v : vampList) {
             System.out.println("v " + v.getX() + " " + v.getY());
         }
-        System.out.println();
+        System.out.println("");
     }
 
-    public List<Vampire> getVampList() {
-        return vampList;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-    
     public void createVampires() {
-        for(int i = 0; i < vampires; i++) {
-            int x = new Random().nextInt(length - 1) + 1;
-            int y = new Random().nextInt(height - 1) + 1;
-            vampList.add(new Vampire(x, y));
+        for (int i = 0; i < this.vampires; i++) {
+            int x = new Random().nextInt((this.length - 1) + 1);
+            int y = new Random().nextInt((this.height - 1) + 1);
+            Vampire v = new Vampire(x, y);
+            this.vampList.add(v);
         }
     }
-    
-    public void draw(Canvas canvas) {
-        for (int i = 0; i < length; i++)
-        {
-            for (int j = 0; j < height; j++)
-            {
-                canvas.setPoint(i, j, '.');
+
+    public void draw(PlayField playField) {
+        for (int h = 0; h < this.height; h++) {
+            for (int l = 0; l < this.length; l++) {
+                playField.SetPoint(l, h, '.');
             }
         }
-        
-        for(BaseObject o : getVampList()){
-            o.draw(canvas);
+        for (BaseObject v : this.vampList) {
+            v.draw(playField);
         }
-        
-        player.draw(canvas);
+        player.draw(playField);
     }
-    
+
     public void moveVampires() {
-        for(Vampire v : getVampList()) {
-            v.move();
+        for (Vampire v : this.vampList) {
+            v.move(length, height, vampList);
         }
     }
-    
+
     public void checkVampires() {
-        for(Vampire v : getVampList()) {
-            if(v.isIntersec(player)) {
+        for (Vampire v : this.vampList) {
+            if (v.isIntersec(player)) {
                 v.die();
             }
         }
     }
-    
+
     public void removeDead() {
-        for(Vampire v : new ArrayList<Vampire>(vampList)) {
-            if(!v.isAlive()) {
-                vampList.remove(v);
+        List<Vampire> toRemove = new ArrayList<Vampire>();
+        for (Vampire v : this.vampList) {
+            if (!v.isAlive()) {
+                toRemove.add(v);
             }
-        } 
+        }
+        this.vampList.removeAll(toRemove);
     }
-    
+
     public void run() {
-        Canvas canvas = new Canvas(length, height);
+
+        PlayField playfield = new PlayField(length, height);
         createVampires();
         printPositions();
-        draw(canvas);
-        canvas.print();
-        
-        while(moves > 0) {
-            String command = Console.readCommand();
+        draw(playfield);
+        playfield.PrintPlayField();
+
+        while (moves > 0) {
+            String command = reader.nextLine();
             int steps = command.length();
-            for(int i = 0; i < steps; i++) {
-                player.move(command.charAt(i));
-                for(Vampire v : vampList) {
-                    v.move();
+            for (int i = 0; i < steps; i++) {
+                player.move(command.charAt(i), length, height);
+
+                if (this.vampiresMove) {
+                    moveVampires();
                 }
                 checkVampires();
                 removeDead();
             }
-            
-            if(vampList.isEmpty()) {
-                System.out.println("YOU WIN");
+
+            if (vampList.isEmpty()) {
+                System.out.println("YOU WIN!");
                 break;
             }
-                        
+
             moves--;
             printPositions();
-            canvas.clear();
-            draw(canvas);
-            canvas.print();
-            
+            playfield.Clear();
+            draw(playfield);
+            playfield.PrintPlayField();
         }
-        
-        if(!vampList.isEmpty())
+
+        if (!vampList.isEmpty()) {
             System.out.println("YOU LOSE");
+        }
     }
-    
-    public static Dungeon game;
-    public static void main(String[] args) {
-        //new Dungeon(10,10,5,14,true).run();
-        game = new Dungeon(5, 5, 5, 5, true);
-        game.run();
-    }
-    
-    
 }
